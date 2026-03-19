@@ -44,6 +44,14 @@ export interface Product {
   images: string[];
   in_stock: boolean;
   created_at: string;
+  user_id?: string | null;
+}
+
+export interface Profile {
+  id: string;
+  role: "admin" | "user";
+  full_name: string | null;
+  created_at: string;
 }
 
 export interface CartItem {
