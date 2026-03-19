@@ -26,7 +26,7 @@ export default function Navbar() {
   const [tiendaOpen, setTiendaOpen] = useState(false);
   // Dropdown tienda en desktop
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLLIElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Cerrar dropdown al hacer click fuera
   useEffect(() => {
@@ -71,7 +71,8 @@ export default function Navbar() {
         {/* Links — desktop */}
         <ul className="hidden md:flex items-center gap-10" role="list">
           {/* Tienda con dropdown */}
-          <li ref={dropdownRef} className="relative">
+          <li className="relative">
+            <div ref={dropdownRef}>
             <button
               className="relative flex items-center gap-1 font-body text-[11px] tracking-[0.25em] uppercase text-ink/70 hover:text-ink transition-colors duration-200 group"
               aria-expanded={dropdownOpen}
@@ -156,6 +157,7 @@ export default function Navbar() {
                 </div>
               </div>
             )}
+            </div>
           </li>
 
           {/* Nosotros */}
