@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCartStore } from '@/store/cartStore';
 import { CATEGORY_TREE } from '@/lib/categories';
 
@@ -26,18 +26,6 @@ export default function Navbar() {
   const [tiendaOpen, setTiendaOpen] = useState(false);
   // Dropdown tienda en desktop
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Cerrar dropdown al hacer click fuera
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   // Cerrar menú móvil al navegar
   function closeMobile() {
@@ -72,7 +60,6 @@ export default function Navbar() {
         <ul className="hidden md:flex items-center gap-10" role="list">
           {/* Tienda con dropdown */}
           <li className="relative">
-            <div ref={dropdownRef}>
             <button
               className="relative flex items-center gap-1 font-body text-[11px] tracking-[0.25em] uppercase text-ink/70 hover:text-ink transition-colors duration-200 group"
               aria-expanded={dropdownOpen}
@@ -157,7 +144,6 @@ export default function Navbar() {
                 </div>
               </div>
             )}
-            </div>
           </li>
 
           {/* Nosotros */}
@@ -235,6 +221,15 @@ export default function Navbar() {
           </button>
         </div>
       </nav>
+
+      {/* Backdrop para cerrar dropdown al click fuera */}
+      {dropdownOpen && (
+        <div
+          className="fixed inset-0 z-[-1]"
+          onClick={() => setDropdownOpen(false)}
+          aria-hidden="true"
+        />
+      )}
 
       {/* Menú móvil desplegable */}
       <div
