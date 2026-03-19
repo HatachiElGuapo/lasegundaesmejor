@@ -26,7 +26,7 @@ export default function Navbar() {
   const [tiendaOpen, setTiendaOpen] = useState(false);
   // Dropdown tienda en desktop
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLLIElement>(null);
 
   // Cerrar dropdown al hacer click fuera
   useEffect(() => {
