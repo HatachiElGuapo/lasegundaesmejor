@@ -1,7 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
-import { deleteProduct, toggleProductStock } from "./actions";
+import { toggleProductStock } from "./actions";
+import DeleteProductButton from "@/components/admin/DeleteProductButton";
 
 export const metadata = { title: "Productos — Admin" };
 
@@ -90,22 +91,7 @@ export default async function AdminProductosPage() {
                       >
                         Editar
                       </Link>
-                      <form
-                        action={async () => {
-                          "use server";
-                          await deleteProduct(p.id);
-                        }}
-                      >
-                        <button
-                          type="submit"
-                          className="text-red-500 hover:underline text-xs"
-                          onClick={(e) => {
-                            if (!confirm("¿Eliminar este producto?")) e.preventDefault();
-                          }}
-                        >
-                          Eliminar
-                        </button>
-                      </form>
+                      <DeleteProductButton productId={p.id} />
                     </div>
                   </td>
                 </tr>
