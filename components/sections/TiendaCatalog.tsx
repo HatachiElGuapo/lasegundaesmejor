@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard from '@/components/ui/ProductCard';
 import { CATEGORY_TREE } from '@/lib/categories';
+import { normalizeSearch } from '@/lib/utils';
 import type { Product, ProductCategory, ProductSubcategory, ProductSize, ProductCondition } from '@/types';
 
 const PAGE_SIZE = 24;
@@ -106,6 +107,7 @@ function EmptyState({ onReset }: { onReset: () => void }) {
 // ─── Componente principal ─────────────────────────────────────────────────────
 
 export default function TiendaCatalog({ products }: { products: Product[] }) {
+  const [search,    setSearch   ] = useState('');
   const [category,  setCategory ] = useState<FilterCategory>('todas');
   const [sub,       setSub      ] = useState<FilterSub>('todas');
   const [size,      setSize     ] = useState<FilterSize>('todas');
@@ -143,24 +145,30 @@ export default function TiendaCatalog({ products }: { products: Product[] }) {
       ]
     : [];
 
-  const filtered = useMemo(() =>
-    products.filter((p) =>
+  const filtered = useMemo(() => {
+    const term = normalizeSearch(search);
+    return products.filter((p) =>
       (category  === 'todas' || p.category    === category)  &&
       (sub       === 'todas' || p.subcategory === sub)       &&
       (size      === 'todas' || p.size        === size)      &&
-      (condition === 'todas' || p.condition   === condition)
-    ),
-    [products, category, sub, size, condition]
-  );
+      (condition === 'todas' || p.condition   === condition) &&
+      (!term || (
+        normalizeSearch(p.name).includes(term) ||
+        normalizeSearch(p.reference ?? '').includes(term) ||
+        normalizeSearch(p.category).includes(term)
+      ))
+    );
+  }, [products, search, category, sub, size, condition]);
 
-  useEffect(() => { setPage(1); }, [category, sub, size, condition]);
+  useEffect(() => { setPage(1); }, [search, category, sub, size, condition]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginated  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const hasFilters = category !== 'todas' || sub !== 'todas' || size !== 'todas' || condition !== 'todas';
+  const hasFilters = search !== '' || category !== 'todas' || sub !== 'todas' || size !== 'todas' || condition !== 'todas';
 
   function resetFilters() {
+    setSearch('');
     setCategory('todas');
     setSub('todas');
     setSize('todas');
@@ -181,6 +189,44 @@ export default function TiendaCatalog({ products }: { products: Product[] }) {
         aria-label="Filtros de productos"
       >
         <div className="flex flex-col gap-6">
+          {/* Barra de búsqueda */}
+          <div className="relative">
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por nombre, referencia o categoría..."
+              aria-label="Buscar prendas"
+              className="w-full font-body text-sm px-4 py-2.5 pr-10 border rounded-none focus:outline-none transition-colors duration-200"
+              style={{
+                backgroundColor: 'var(--color-bg)',
+                borderColor:     search ? 'var(--color-ink)' : 'var(--color-border)',
+                color:           'var(--color-ink)',
+              }}
+            />
+            {search ? (
+              <button
+                type="button"
+                onClick={() => setSearch('')}
+                aria-label="Limpiar búsqueda"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xl leading-none transition-colors duration-200"
+                style={{ color: 'var(--color-muted)' }}
+              >
+                ×
+              </button>
+            ) : (
+              <svg
+                className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                width="14" height="14" viewBox="0 0 14 14" fill="none"
+                aria-hidden="true"
+                style={{ color: 'var(--color-muted)' }}
+              >
+                <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.25" />
+                <line x1="9.5" y1="9.5" x2="13" y2="13" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+              </svg>
+            )}
+          </div>
+
           {/* Fila 1: Categoría principal */}
           <div className="flex flex-col md:flex-row gap-8 md:items-end">
             <FilterGroup

@@ -8,7 +8,7 @@ export const revalidate = 60; // ISR: refrescar cada 60 segundos
 async function getProducts(): Promise<Product[]> {
   const { data, error } = await supabase
     .from('products')
-    .select('id, slug, name, description, price, category, subcategory, size, condition, images, in_stock, created_at')
+    .select('id, slug, name, description, price, category, subcategory, size, condition, images, in_stock, reference, created_at')
     .eq('in_stock', true)
     .order('created_at', { ascending: false });
 

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { toggleProductStock } from "@/app/admin/productos/actions";
 import DeleteProductButton from "@/components/admin/DeleteProductButton";
+import { normalizeSearch } from "@/lib/utils";
 
 interface Product {
   id: string;
@@ -22,11 +23,11 @@ export default function ProductsTable({ products }: { products: Product[] }) {
 
   const filtered = q.trim()
     ? products.filter((p) => {
-        const term = q.trim().toLowerCase();
+        const term = normalizeSearch(q);
         return (
-          p.name.toLowerCase().includes(term) ||
-          (p.reference?.toLowerCase().includes(term) ?? false) ||
-          p.category.toLowerCase().includes(term)
+          normalizeSearch(p.name).includes(term) ||
+          normalizeSearch(p.reference ?? "").includes(term) ||
+          normalizeSearch(p.category).includes(term)
         );
       })
     : products;
