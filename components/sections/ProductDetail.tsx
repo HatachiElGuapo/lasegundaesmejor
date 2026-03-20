@@ -228,7 +228,7 @@ export default function ProductDetail({ product }: { product: Product }) {
           </p>
         </div>
 
-        {/* Talla + condición */}
+        {/* Talla + condición + referencia */}
         <div className="grid grid-cols-2 gap-6 mb-10">
           <div>
             <p className="font-body text-[10px] tracking-[0.3em] uppercase mb-2" style={{ color: 'var(--color-muted)' }}>
@@ -247,6 +247,13 @@ export default function ProductDetail({ product }: { product: Product }) {
             </p>
           </div>
         </div>
+
+        {/* Referencia */}
+        {product.reference && (
+          <p className="font-body text-[10px] tracking-[0.25em] uppercase -mt-4 mb-10" style={{ color: 'var(--color-muted)' }}>
+            Ref. <span className="font-mono">{product.reference}</span>
+          </p>
+        )}
 
         {/* Separador */}
         <div className="w-full h-px mb-10" style={{ backgroundColor: 'var(--color-border)' }} />

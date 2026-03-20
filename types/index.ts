@@ -43,6 +43,7 @@ export interface Product {
   condition: ProductCondition;
   images: string[];
   in_stock: boolean;
+  reference?: string | null;
   created_at: string;
   user_id?: string | null;
 }

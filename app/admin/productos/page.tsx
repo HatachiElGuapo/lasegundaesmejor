@@ -16,7 +16,7 @@ export default async function AdminProductosPage({
 
   let query = supabase
     .from("products")
-    .select("id, name, price, category, size, in_stock, images, created_at")
+    .select("id, name, price, category, size, in_stock, images, reference, created_at")
     .order("created_at", { ascending: false });
 
   if (q) query = query.ilike("name", `%${q}%`);
@@ -80,6 +80,7 @@ export default async function AdminProductosPage({
             <thead>
               <tr className="border-b border-border text-left text-xs text-muted uppercase tracking-widest">
                 <th className="px-5 py-4">Prenda</th>
+                <th className="px-5 py-4">Ref.</th>
                 <th className="px-5 py-4">Precio</th>
                 <th className="px-5 py-4">Cat.</th>
                 <th className="px-5 py-4">Talla</th>
@@ -99,6 +100,11 @@ export default async function AdminProductosPage({
                       )}
                       <span className="text-ink font-medium line-clamp-1">{p.name}</span>
                     </div>
+                  </td>
+                  <td className="px-5 py-3">
+                    <span className="font-mono text-xs text-muted tracking-wider">
+                      {p.reference ?? "—"}
+                    </span>
                   </td>
                   <td className="px-5 py-3 text-ink">
                     ${p.price.toLocaleString("es-CO")}
