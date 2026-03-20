@@ -6,13 +6,22 @@ import DeleteProductButton from "@/components/admin/DeleteProductButton";
 
 export const metadata = { title: "Productos — Admin" };
 
-export default async function AdminProductosPage() {
+export default async function AdminProductosPage({
+  searchParams,
+}: {
+  searchParams: { q?: string };
+}) {
+  const q = searchParams.q?.trim() ?? "";
   const supabase = createSupabaseServerClient();
 
-  const { data: products } = await supabase
+  let query = supabase
     .from("products")
     .select("id, name, price, category, size, in_stock, images, created_at")
     .order("created_at", { ascending: false });
+
+  if (q) query = query.ilike("name", `%${q}%`);
+
+  const { data: products } = await query;
 
   return (
     <div>
@@ -25,6 +34,38 @@ export default async function AdminProductosPage() {
           + Nuevo
         </Link>
       </div>
+
+      {/* Buscador */}
+      <form method="GET" className="flex items-center gap-3 mb-6">
+        <input
+          type="search"
+          name="q"
+          defaultValue={q}
+          placeholder="Buscar por nombre..."
+          className="flex-1 px-4 py-2 bg-surface border border-border rounded text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
+        />
+        <button
+          type="submit"
+          className="px-4 py-2 bg-ink text-bg text-sm tracking-widest uppercase hover:bg-accent transition-colors rounded"
+        >
+          Buscar
+        </button>
+        {q && (
+          <Link
+            href="/admin/productos"
+            className="px-4 py-2 border border-border rounded text-sm text-muted hover:text-ink hover:border-ink transition-colors"
+          >
+            Limpiar
+          </Link>
+        )}
+      </form>
+
+      {q && (
+        <p className="text-sm text-muted mb-4">
+          {products?.length ?? 0} resultado{products?.length !== 1 ? "s" : ""} para{" "}
+          <span className="text-ink font-medium">"{q}"</span>
+        </p>
+      )}
 
       {!products?.length ? (
         <div className="bg-surface border border-border rounded p-10 text-center">
